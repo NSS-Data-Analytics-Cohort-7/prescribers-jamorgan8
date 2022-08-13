@@ -126,11 +126,18 @@ ORDER BY drug_type;
 
 /*5. a. How many CBSAs are in Tennessee? Warning: The cbsa table contains information for all states, not just Tennessee. */
 
-SELECT COUNT(cbsaname) 
+/*SELECT cbsaname 
 FROM cbsa
-WHERE cbsaname LIKE '%TN';
+WHERE cbsaname LIKE '%TN'; */
 
---ANSWER-- 33 in TN
+
+SELECT DISTINCT cbsa
+FROM fips_county AS f1
+LEFT JOIN cbsa AS c1
+	ON c1.fipscounty = f1.fipscounty
+WHERE state = 'TN' AND cbsa IS NOT NULL;
+
+--ANSWER-- 10 in TN
 
 /* b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.*/
 
@@ -153,10 +160,19 @@ GROUP BY cbsa
 ORDER BY population;
 
 --ANSWER-- 32820 has the most @ 937847. 16860 has the least @ 14654
-
-
-
  
 
 /* c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.*/
+
+SELECT f1.county AS county,
+	   p1.population
+FROM population AS p1
+LEFT JOIN fips_county AS f1
+	ON p1.fipscounty = f1.fipscounty
+LEFT JOIN cbsa AS c1
+	ON p1.fipscounty = c1.fipscounty
+WHERE cbsa IS NULL
+ORDER BY population DESC;
+
+--ANSWER-- the largest is Sevier Co with 95,523
 
