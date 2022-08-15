@@ -215,7 +215,7 @@ LEFT JOIN prescriber AS p2
 	ON p1.npi = p2.npi
 WHERE p1.total_claim_count >= 3000;
 
-/*7. AThe goal of this exercise is to generate a full list of all pain management specialists in Nashville and the number of claims they had for each opioid. Hint: The results from all 3 parts will have 637 rows.
+/*7. The goal of this exercise is to generate a full list of all pain management specialists in Nashville and the number of claims they had for each opioid. Hint: The results from all 3 parts will have 637 rows.
 
 a. First, create a list of all npi/drug_name combinations for pain management specialists (specialty_description = 'Pain Management') in the city of Nashville (nppes_provider_city = 'NASHVILLE'), where the drug is an opioid (opiod_drug_flag = 'Y'). Warning: Double-check your query before running it. You will only need to use the prescriber and drug tables since you don't need the claims numbers yet. */
 
@@ -226,23 +226,23 @@ LEFT JOIN prescription AS p2
 	ON p1.npi = p2.npi
 LEFT JOIN drug AS d1
 	ON p2.drug_name = d1.drug_name
-WHERE specialty_description = 'Pain Management'
+WHERE specialty_description LIKE '%Pain Management%'
 	AND nppes_provider_city = 'NASHVILLE'
 	AND opioid_drug_flag = 'Y';
 
 /*b. Next, report the number of claims per drug per prescriber. Be sure to include all combinations, whether or not the prescriber had any claims. You should report the npi, the drug name, and the number of claims (total_claim_count).*/
 
 SELECT p1.npi,
-	   d1.drug_name,
-	   p2.total_claim_count AS number_of_claims
+	 SUM(p2.total_claim_count) AS number_of_claims
 FROM prescriber AS p1
 LEFT JOIN prescription AS p2
 	ON p1.npi = p2.npi
 LEFT JOIN drug AS d1
 	ON p2.drug_name = d1.drug_name
-WHERE specialty_description = 'Pain Management'
+WHERE specialty_description LIKE '%Pain Management%'
 	AND nppes_provider_city = 'NASHVILLE'
 	AND opioid_drug_flag = 'Y'
-GROUP BY p1.npi, d1.drug_name, number_of_claims;
+GROUP BY p1.npi;
+
 
 /*c. Finally, if you have not done so already, fill in any missing values for total_claim_count with 0. Hint - Google the COALESCE function.*/
